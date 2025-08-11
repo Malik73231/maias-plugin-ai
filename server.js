@@ -12,7 +12,7 @@ app.use(express.json({ limit: "1mb" }));
 // basic protection so your key isn't spammed
 app.use("/api/", rateLimit({ windowMs: 60_000, max: 30 }));
 
-const OPENAI_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_KEY = "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";
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 
 async function callOpenAI(system, user) {
