@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
@@ -68,6 +69,3 @@ app.post("/api/script", async (req, res) => {
 app.get("/", (req, res) => res.send("MaiasPlugin AI is running"));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server on " + PORT));
-
-app.set('trust proxy', 1);
-
