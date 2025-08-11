@@ -17,25 +17,45 @@ const OPENAI_KEY = "sk-proj-MNl2cbXuOQVDiMvAeCpBIu0mXBM6Li5D-2YTJmxpad3m6yzU9WIG
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 
 async function callOpenAI(system, user) {
-  const r = await fetch(OPENAI_URL, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${OPENAI_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      temperature: 0.2,
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user }
-      ]
-    })
-  });
-  if (!r.ok) throw new Error(await r.text());
-  const data = await r.json();
-  return data.choices[0].message.content;
+    try {
+        const r = await fetch(OPENAI_URL, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${OPENAI_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [
+                    { role: "system", content: system },
+                    { role: "user", content: user }
+                ]
+            })
+        });
+
+        const data = await r.json();
+
+        if (!r.ok) {
+            console.error("OpenAI API Error:", data);
+            throw new Error(data.error?.message || "Unknown API error");
+        }
+
+        return data.choices[0].message.content;
+    } catch (err) {
+        console.error("callOpenAI failed:", err);
+        throw err;
+    }
 }
+
+app.post("/api", async (req, res) => {
+    try {
+        const json = await callOpenAI("Map generator system", req.body.prompt || "");
+        res.json({ reply: json });
+    } catch (e) {
+        console.error("Map generation failed:", e);
+        res.status(500).json({ error: "MAP_FAIL", detail: String(e) });
+    }
+});
 
 const SYS_MAP = `You are a Roblox terrain/scene planner.
 Return ONLY JSON: {"terrain":[...], "assets":[...]}.
