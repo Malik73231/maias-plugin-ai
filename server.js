@@ -68,3 +68,6 @@ app.post("/api/script", async (req, res) => {
 app.get("/", (req, res) => res.send("MaiasPlugin AI is running"));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server on " + PORT));
+
+app.set('trust proxy', 1);
+
